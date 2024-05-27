@@ -1,6 +1,6 @@
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-
+import puzzle.*;
 public class LabyrinthModel {
     public static final int BOARD_SIZE = 6;
 
@@ -22,9 +22,11 @@ public class LabyrinthModel {
         return board[i][j].getReadOnlyProperty();
     }
 
-    public void move(Square state, int i, int j) {
-
+    public void move(int fromX, int fromY, int toX, int toY) {
+        board[toX][toY].set(board[fromX][fromY].get());
+        board[fromX][fromY].set(Square.NONE);
     }
+
     public String toString() {
         var sb = new StringBuilder();
         for (var i = 0; i < BOARD_SIZE; i++) {
@@ -38,6 +40,8 @@ public class LabyrinthModel {
 
     public static void main(String[] args) {
         var model = new LabyrinthModel();
+        System.out.println(model);
+        model.move(0, 0, 0, 1);
         System.out.println(model);
     }
 }
