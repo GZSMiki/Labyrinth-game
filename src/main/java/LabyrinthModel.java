@@ -1,11 +1,14 @@
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import puzzle.*;
-public class LabyrinthModel {
+
+import java.util.Set;
+
+public class LabyrinthModel implements TwoPhaseMoveState<Position>{
     public static final int BOARD_SIZE = 6;
 
     private final ReadOnlyObjectWrapper<Square>[][] board;
-    private int[][] vertivalWalls;
+    private int[][] verticalWalls;
     private int[][] horizontalWalls;
     public LabyrinthModel() {
         board = new ReadOnlyObjectWrapper[BOARD_SIZE][BOARD_SIZE];
@@ -27,6 +30,8 @@ public class LabyrinthModel {
         board[fromX][fromY].set(Square.NONE);
     }
 
+
+
     public String toString() {
         var sb = new StringBuilder();
         for (var i = 0; i < BOARD_SIZE; i++) {
@@ -43,5 +48,35 @@ public class LabyrinthModel {
         System.out.println(model);
         model.move(0, 0, 0, 1);
         System.out.println(model);
+    }
+
+    @Override
+    public boolean isLegalToMoveFrom(Position position) {
+        return false;
+    }
+
+    @Override
+    public boolean isSolved() {
+        return false;
+    }
+
+    @Override
+    public boolean isLegalMove(TwoPhaseMove<Position> positionTwoPhaseMove) {
+        return false;
+    }
+
+    @Override
+    public void makeMove(TwoPhaseMove<Position> positionTwoPhaseMove) {
+
+    }
+
+    @Override
+    public Set<TwoPhaseMove<Position>> getLegalMoves() {
+        return null;
+    }
+
+    @Override
+    public TwoPhaseMoveState<Position> clone() {
+        return null;
     }
 }
