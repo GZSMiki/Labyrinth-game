@@ -12,12 +12,22 @@ public class LabyrinthModel implements TwoPhaseMoveState<Position>{
     private final ReadOnlyObjectWrapper<Square>[][] board;
     private List<Position> verticalWalls;
     private List<Position> horizontalWalls;
+
+    private Position Player;
+    private Position Enemy;
     public LabyrinthModel() {
         board = new ReadOnlyObjectWrapper[BOARD_SIZE][BOARD_SIZE];
         for (var i = 0; i < BOARD_SIZE; i++) {
             for (var j = 0; j < BOARD_SIZE; j++) {
-                if (i == 0 && j == 0)  board[i][j] = new ReadOnlyObjectWrapper<Square>(Square.PLAYER);
-                else if (i == 2 && j == 4) board[i][j] = new ReadOnlyObjectWrapper<Square>(Square.ENEMY);
+                if (i == 0 && j == 0)  {
+                    board[i][j] = new ReadOnlyObjectWrapper<Square>(Square.PLAYER);
+                    Player = new Position(i, j);
+                }
+
+                else if (i == 2 && j == 4) {
+                    board[i][j] = new ReadOnlyObjectWrapper<Square>(Square.ENEMY);
+                    Enemy = new Position(i, j);
+                }
                 else board[i][j] = new ReadOnlyObjectWrapper<Square>(Square.NONE);
             }
         }
@@ -47,12 +57,12 @@ public class LabyrinthModel implements TwoPhaseMoveState<Position>{
     public ReadOnlyObjectProperty<Square> squareProperty(int i, int j) {
         return board[i][j].getReadOnlyProperty();
     }
-
+    /*
     public void move(int fromX, int fromY, int toX, int toY) {
         board[toX][toY].set(board[fromX][fromY].get());
         board[fromX][fromY].set(Square.NONE);
     }
-
+    */
 
 
     public String toString() {
@@ -69,7 +79,15 @@ public class LabyrinthModel implements TwoPhaseMoveState<Position>{
     public static void main(String[] args) {
         var model = new LabyrinthModel();
         System.out.println(model);
-        model.move(0, 0, 0, 1);
+        model.makeMove(new TwoPhaseMove<>(new Position(0, 0), new Position(1, 0)));
+        System.out.println(model);
+        model.makeMove(new TwoPhaseMove<>(new Position(0, 0), new Position(0, 1)));
+        System.out.println(model);
+        model.makeMove(new TwoPhaseMove<>(new Position(0, 1), new Position(0, 2)));
+        System.out.println(model);
+        model.makeMove(new TwoPhaseMove<>(new Position(0, 2), new Position(0, 3)));
+        System.out.println(model);
+        model.makeMove(new TwoPhaseMove<>(new Position(0, 3), new Position(0, 4)));
         System.out.println(model);
     }
 
@@ -85,18 +103,36 @@ public class LabyrinthModel implements TwoPhaseMoveState<Position>{
 
     @Override
     public boolean isLegalMove(TwoPhaseMove<Position> positions) {
-        return false;
+        return isLegalToMoveFrom(positions.from()) &&
+                !isMoveBlocked(positions);
     }
 
-    private boolean isMoveBlocked(TwoPhaseMove<Position> positions) {
+    public boolean isMoveBlocked(TwoPhaseMove<Position> positions) {
         Position from = positions.from();
         Position to = positions.to();
+        if(verticalWalls.contains(from) && (to.col() - from.col() == 1)) {
+            return true;
+        }
+        if(verticalWalls.contains(to) && (to.col() - from.col() == -1)) {
+            return true;
+        }
+        if(horizontalWalls.contains(from) && (to.row() - from.col() == 1)) {
+            return true;
+        }
+        if(horizontalWalls.contains(to) && (to.col() - from.col() == -1)) {
+            return true;
+        }
+
         return false;
     }
 
     @Override
-    public void makeMove(TwoPhaseMove<Position> positionTwoPhaseMove) {
-
+    public void makeMove(TwoPhaseMove<Position> pos) {
+        if(isLegalMove(pos)) {
+            board[pos.to().row()][pos.to().col()]
+                    .set(board[pos.from().row()][pos.from().col()].get());
+            board[pos.from().row()][pos.from().col()].set(Square.NONE);
+        }
     }
 
     @Override
