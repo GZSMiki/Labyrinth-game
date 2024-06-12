@@ -4,7 +4,7 @@ import puzzle.*;
 
 import java.util.*;
 
-public class LabyrinthModel implements State<Position>{
+public class LabyrinthModel implements State<Direction>{
     public static final int BOARD_SIZE = 6;
 
     private final ReadOnlyObjectWrapper<Square>[][] board;
@@ -64,11 +64,7 @@ public class LabyrinthModel implements State<Position>{
 
     public static void main(String[] args) {
         var model = new LabyrinthModel();
-        System.out.println(model);
-        model.makeMove(new Position(0,1));
-        System.out.println(model);
-        model.makeMove(new Position(2, 3));
-        System.out.println(model);
+        
     }
 
     private Position getCurrentTurnPosition(Square turn) {
@@ -85,70 +81,109 @@ public class LabyrinthModel implements State<Position>{
     }
 
     @Override
-    public boolean isLegalMove(Position position) {
+    public boolean isLegalMove(Direction direction) {
+        return switch (direction) {
+            case UP -> canMoveUp();
+            case RIGHT -> canMoveRight();
+            case DOWN -> canMoveDown();
+            case LEFT -> canMoveLeft();
+        };
+
+        /*
         if(isOnBoard(position)) {
             if(!isMoveBlocked(position) && isMoveDistanceOne(position)){
                 return true;
             }
         }
         return false;
+         */
+    }
+
+    private boolean canMoveLeft() {
+        return getCurrentTurnPosition(turn).col() > 0 && !isMoveBlocked(Direction.LEFT);
+    }
+
+    private boolean canMoveDown() {
+        return getCurrentTurnPosition(turn).row() > 0 && !isMoveBlocked(Direction.DOWN);
+    }
+
+    private boolean canMoveRight() {
+        return getCurrentTurnPosition(turn).col() < BOARD_SIZE && !isMoveBlocked(Direction.RIGHT);
+    }
+
+    private boolean canMoveUp() {
+        return getCurrentTurnPosition(turn).row() > 0 && !isMoveBlocked(Direction.UP);
     }
 
     @Override
-    public void makeMove(Position pos) {
+    public void makeMove(Direction direction) {
+
+        switch(direction) {
+            case UP -> moveUp(turn);
+            case DOWN -> moveDown(turn);
+            case LEFT -> moveLeft(turn);
+            case RIGHT -> moveRight(turn);
+        }
+        turn = turn.equals(Square.PLAYER) ? Square.ENEMY : Square.PLAYER;
+        /*
         Position currentPos = getCurrentTurnPosition(turn);
-        if(isLegalMove(pos)) {
+        if(isLegalMove(direction)) {
             board[pos.row()][pos.col()].set(turn);
             board[currentPos.row()][currentPos.col()].set(Square.NONE);
             nextTurn();
             //TODO: make ai for the enemy, then call it here, if the turn is Enemy
         }
+
+         */
+    }
+
+    private void moveRight(Square turn) {
+    }
+
+    private void moveLeft(Square turn) {
+        
+    }
+
+    private void moveDown(Square turn) {
+        
+    }
+
+    private void moveUp(Square turn) {
+        Position newPosition = turn.equals(Square.PLAYER) ? Player : Enemy;
+        newPosition.move(Direction.UP);
     }
 
     @Override
-    public Set<Position> getLegalMoves() {
-        Position currentPos = getCurrentTurnPosition(turn);
-        var legalMoves = new HashSet<Position>();
-        Position up = new Position(currentPos.row()+1, currentPos.col());
-        Position down = new Position(currentPos.row()-1, currentPos.col());
-        Position left = new Position(currentPos.row(), currentPos.col()-1);
-        Position right = new Position(currentPos.row(), currentPos.col()+1);
-
-        if(isLegalMove(up)) {
-            legalMoves.add(up);
-        }
-        if(isLegalMove(down)) {
-            legalMoves.add(down);
-        }
-        if(isLegalMove(left)) {
-            legalMoves.add(left);
-        }
-        if(isLegalMove(right)) {
-            legalMoves.add(right);
+    public Set<Direction> getLegalMoves() {
+        var legalMoves = new HashSet<Direction>();
+        for (var direction : Direction.values()) {
+            if (isLegalMove(direction)) {
+                legalMoves.add(direction);
+            }
         }
         return legalMoves;
     }
 
     @Override
-    public State<Position> clone() {
+    public State<Direction> clone() {
         return null;
     }
 
-    public boolean isMoveBlocked(Position position) {
-        Position currentPos = getCurrentTurnPosition(turn);
-        direction = Direction.of(position.row() - currentPos.row(),
-                position.col() - currentPos.col());
-
-        if(verticalWalls.contains(currentPos) && direction == Direction.RIGHT) {
+    public boolean isMoveBlocked(Direction direction) {
+        Position fromPos = getCurrentTurnPosition(turn);
+        Position toPos;
+        if(verticalWalls.contains(fromPos) && direction == Direction.RIGHT) {
             return true;
         }
-        if(verticalWalls.contains(position) && direction == Direction.LEFT) {
+        toPos = fromPos.moveLeft();
+        if(verticalWalls.contains(toPos) && direction == Direction.LEFT) {
             return true;
         }
-        if(horizontalWalls.contains(currentPos) && direction == Direction.DOWN) {
+        if(horizontalWalls.contains(fromPos) && direction == Direction.DOWN) {
             return true;
         }
-        if(horizontalWalls.contains(position) && direction == Direction.UP) {
+        toPos = fromPos.moveUp();
+        if(horizontalWalls.contains(toPos) && direction == Direction.UP) {
             return true;
         }
 
