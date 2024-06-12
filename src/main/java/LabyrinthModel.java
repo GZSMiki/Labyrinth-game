@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class LabyrinthModel implements TwoPhaseMoveState<Position>{
+public class LabyrinthModel implements State<Position>{
     public static final int BOARD_SIZE = 6;
 
     private final ReadOnlyObjectWrapper<Square>[][] board;
@@ -57,12 +57,6 @@ public class LabyrinthModel implements TwoPhaseMoveState<Position>{
     public ReadOnlyObjectProperty<Square> squareProperty(int i, int j) {
         return board[i][j].getReadOnlyProperty();
     }
-    /*
-    public void move(int fromX, int fromY, int toX, int toY) {
-        board[toX][toY].set(board[fromX][fromY].get());
-        board[fromX][fromY].set(Square.NONE);
-    }
-    */
 
 
     public String toString() {
@@ -92,15 +86,26 @@ public class LabyrinthModel implements TwoPhaseMoveState<Position>{
     }
 
     @Override
-    public boolean isLegalToMoveFrom(Position position) {
-        return isOnBoard(position) && isPlayer(position);
-    }
-
-    @Override
     public boolean isSolved() {
         return false;
     }
 
+    @Override
+    public boolean isLegalMove(Position position) {
+        return false;
+    }
+
+    @Override
+    public void makeMove(Position position) {
+
+    }
+
+    @Override
+    public Set<Position> getLegalMoves() {
+        return null;
+    }
+
+    /*
     @Override
     public boolean isLegalMove(TwoPhaseMove<Position> positions) {
         return isLegalToMoveFrom(positions.from()) &&
@@ -140,6 +145,7 @@ public class LabyrinthModel implements TwoPhaseMoveState<Position>{
         return null;
     }
 
+     */
 
     private boolean isPlayer(Position position) {
         return getSquare(position) == Square.PLAYER;
