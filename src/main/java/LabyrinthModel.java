@@ -64,7 +64,7 @@ public class LabyrinthModel implements State<Direction>{
 
     public static void main(String[] args) {
         var model = new LabyrinthModel();
-        
+
     }
 
     private Position getCurrentTurnPosition(Square turn) {
@@ -88,15 +88,6 @@ public class LabyrinthModel implements State<Direction>{
             case DOWN -> canMoveDown();
             case LEFT -> canMoveLeft();
         };
-
-        /*
-        if(isOnBoard(position)) {
-            if(!isMoveBlocked(position) && isMoveDistanceOne(position)){
-                return true;
-            }
-        }
-        return false;
-         */
     }
 
     private boolean canMoveLeft() {
@@ -125,16 +116,6 @@ public class LabyrinthModel implements State<Direction>{
             case RIGHT -> moveRight(turn);
         }
         turn = turn.equals(Square.PLAYER) ? Square.ENEMY : Square.PLAYER;
-        /*
-        Position currentPos = getCurrentTurnPosition(turn);
-        if(isLegalMove(direction)) {
-            board[pos.row()][pos.col()].set(turn);
-            board[currentPos.row()][currentPos.col()].set(Square.NONE);
-            nextTurn();
-            //TODO: make ai for the enemy, then call it here, if the turn is Enemy
-        }
-
-         */
     }
 
     private void moveRight(Square turn) {
