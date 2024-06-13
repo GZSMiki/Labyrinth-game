@@ -179,7 +179,7 @@ public class LabyrinthModel implements State<Direction>{
 
         return false;
     }
-    
+
     private Square getSquare(Position pos) {
         int row = pos.row();
         int col = pos.col();
