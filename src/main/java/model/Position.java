@@ -1,3 +1,5 @@
+package model;
+
 import java.util.Objects;
 
 public record Position(int row, int col) {
@@ -6,7 +8,7 @@ public record Position(int row, int col) {
     }
 
     /**
-     * Convenience method that is equivalent to {@code move(Direction.UP)}.
+     * Convenience method that is equivalent to {@code move(model.Direction.UP)}.
      *
      * @return the position above this position
      */
@@ -15,7 +17,7 @@ public record Position(int row, int col) {
     }
 
     /**
-     * Convenience method that is equivalent to {@code move(Direction.RIGHT)}.
+     * Convenience method that is equivalent to {@code move(model.Direction.RIGHT)}.
      *
      * @return the position to the right of this position
      */
@@ -24,7 +26,7 @@ public record Position(int row, int col) {
     }
 
     /**
-     * Convenience method that is equivalent to {@code move(Direction.DOWN)}.
+     * Convenience method that is equivalent to {@code move(model.Direction.DOWN)}.
      *
      * @return the position below this position
      */
@@ -33,7 +35,7 @@ public record Position(int row, int col) {
     }
 
     /**
-     * Convenience method that is equivalent to {@code move(Direction.LEFT)}.
+     * Convenience method that is equivalent to {@code move(model.Direction.LEFT)}.
      *
      * @return the position to the left of this position
      */

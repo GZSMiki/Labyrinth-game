@@ -1,3 +1,5 @@
+package model;
+
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import puzzle.*;
@@ -11,25 +13,29 @@ public class LabyrinthModel implements State<Direction>{
     private List<Position> verticalWalls;
     private List<Position> horizontalWalls;
 
-    private Position Player;
-    private Position Enemy;
+
+    //Player index:0
+    //Enemy index:1
+    private final ReadOnlyObjectWrapper<Position>[] positions;
     private Square turn;
 
+    private int index;
     private Direction direction;
-    public LabyrinthModel() {
+    public LabyrinthModel(Position playerPosition, Position enemyPosition) {
         board = new ReadOnlyObjectWrapper[BOARD_SIZE][BOARD_SIZE];
         turn = Square.PLAYER;
+        index = 0;
+        this.positions = new ReadOnlyObjectWrapper[2];
+        this.positions[0] = new ReadOnlyObjectWrapper<>(playerPosition);
+        this.positions[1] = new ReadOnlyObjectWrapper<>(enemyPosition);
 
         for (var i = 0; i < BOARD_SIZE; i++) {
             for (var j = 0; j < BOARD_SIZE; j++) {
-                if (i == 0 && j == 0)  {
+                if (i == playerPosition.row() && j == playerPosition.col())  {
                     board[i][j] = new ReadOnlyObjectWrapper<Square>(Square.PLAYER);
-                    Player = new Position(i, j);
                 }
-
-                else if (i == 2 && j == 4) {
+                else if (i == enemyPosition.row() && j == enemyPosition.col()) {
                     board[i][j] = new ReadOnlyObjectWrapper<Square>(Square.ENEMY);
-                    Enemy = new Position(i, j);
                 }
                 else board[i][j] = new ReadOnlyObjectWrapper<Square>(Square.NONE);
             }
@@ -63,17 +69,36 @@ public class LabyrinthModel implements State<Direction>{
 
 
     public static void main(String[] args) {
-        var model = new LabyrinthModel();
-
+        var model = new LabyrinthModel(new Position(0,0), new Position(2, 4));
+        System.out.println(model);
+        model.makeMove(Direction.RIGHT);
+        System.out.println(model);
+        model.makeMove(Direction.LEFT);
+        System.out.println(model);
+        model.makeMove(Direction.RIGHT);
+        System.out.println(model);
+        model.makeMove(Direction.UP);
+        System.out.println(model);
+        model.makeMove(Direction.RIGHT);
+        System.out.println(model);
+        model.makeMove(Direction.RIGHT);
+        System.out.println(model);
     }
 
-    private Position getCurrentTurnPosition(Square turn) {
-        if(turn == Square.PLAYER) return Player;
-        return Enemy;
+    private Position getPosition(int index) {
+        return positions[index].get();
     }
 
-    private void nextTurn() {
-        turn = turn.equals(Square.PLAYER) ? Square.ENEMY : Square.PLAYER;
+    private void setPosition(int index, Position position) {
+        positions[index].set(position);
+    }
+
+    public void setSquare(Position position, Square square){
+        board[position.row()][position.col()].set(square);
+    }
+
+    private void changeIndex(int index) {
+        this.index = (index == 0 ? 1 : 0);
     }
     @Override
     public boolean isSolved() {
@@ -91,47 +116,31 @@ public class LabyrinthModel implements State<Direction>{
     }
 
     private boolean canMoveLeft() {
-        return getCurrentTurnPosition(turn).col() > 0 && !isMoveBlocked(Direction.LEFT);
+        return getPosition(index).col() > 0 && !isMoveBlocked(Direction.LEFT);
     }
 
     private boolean canMoveDown() {
-        return getCurrentTurnPosition(turn).row() > 0 && !isMoveBlocked(Direction.DOWN);
+        return getPosition(index).row() > 0 && !isMoveBlocked(Direction.DOWN);
     }
 
     private boolean canMoveRight() {
-        return getCurrentTurnPosition(turn).col() < BOARD_SIZE && !isMoveBlocked(Direction.RIGHT);
+        return getPosition(index).col() < BOARD_SIZE && !isMoveBlocked(Direction.RIGHT);
     }
 
     private boolean canMoveUp() {
-        return getCurrentTurnPosition(turn).row() > 0 && !isMoveBlocked(Direction.UP);
+        return getPosition(index).row() > 0 && !isMoveBlocked(Direction.UP);
     }
 
     @Override
     public void makeMove(Direction direction) {
-
-        switch(direction) {
-            case UP -> moveUp(turn);
-            case DOWN -> moveDown(turn);
-            case LEFT -> moveLeft(turn);
-            case RIGHT -> moveRight(turn);
+        if(isLegalMove(direction)) {
+            Position newPosition = getPosition(index).move(direction);
+            setSquare(getPosition(index), Square.NONE);
+            setSquare(newPosition, turn);
+            setPosition(index, newPosition);
+            changeIndex(index);
+            turn = turn.nextTurn();
         }
-        turn = turn.equals(Square.PLAYER) ? Square.ENEMY : Square.PLAYER;
-    }
-
-    private void moveRight(Square turn) {
-    }
-
-    private void moveLeft(Square turn) {
-        
-    }
-
-    private void moveDown(Square turn) {
-        
-    }
-
-    private void moveUp(Square turn) {
-        Position newPosition = turn.equals(Square.PLAYER) ? Player : Enemy;
-        newPosition.move(Direction.UP);
     }
 
     @Override
@@ -147,11 +156,11 @@ public class LabyrinthModel implements State<Direction>{
 
     @Override
     public State<Direction> clone() {
-        return null;
+        return new LabyrinthModel(positions[0].get(), positions[1].get());
     }
 
     public boolean isMoveBlocked(Direction direction) {
-        Position fromPos = getCurrentTurnPosition(turn);
+        Position fromPos = getPosition(index);
         Position toPos;
         if(verticalWalls.contains(fromPos) && direction == Direction.RIGHT) {
             return true;
@@ -170,28 +179,11 @@ public class LabyrinthModel implements State<Direction>{
 
         return false;
     }
-
-    private boolean isMoveDistanceOne(Position position) {
-        Position currentPos = getCurrentTurnPosition(turn);
-        int rowDistance = position.row() - currentPos.row();
-        int colDistance = position.col() - currentPos.col();
-        if(Math.abs(rowDistance) > 1 || Math.abs(colDistance) > 1) {
-            return false;
-        }
-        return true;
-    }
+    
     private Square getSquare(Position pos) {
         int row = pos.row();
         int col = pos.col();
         return board[row][col].get();
-    }
-
-    private boolean isOnBoard(Position position) {
-        if(position.row() < 0 || position.col() < 0 ||
-                position.row() > BOARD_SIZE || position.col() > BOARD_SIZE) {
-            return false;
-        }
-        return true;
     }
 
     public String toString() {

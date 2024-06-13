@@ -1,3 +1,5 @@
+package model;
+
 public enum Direction {
     UP(-1, 0),
     RIGHT(0, 1),
