@@ -133,14 +133,12 @@ public class LabyrinthModel implements State<Direction>{
 
     @Override
     public void makeMove(Direction direction) {
-        if(isLegalMove(direction)) {
-            Position newPosition = getPosition(index).move(direction);
-            setSquare(getPosition(index), Square.NONE);
-            setSquare(newPosition, turn);
-            setPosition(index, newPosition);
-            changeIndex(index);
-            turn = turn.nextTurn();
-        }
+        Position newPosition = getPosition(index).move(direction);
+        setSquare(getPosition(index), Square.NONE);
+        setSquare(newPosition, turn);
+        setPosition(index, newPosition);
+        changeIndex(index);
+        turn = turn.nextTurn();
     }
 
     @Override
