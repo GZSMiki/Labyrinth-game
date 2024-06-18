@@ -1,5 +1,7 @@
 package model;
 
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import puzzle.*;
@@ -10,21 +12,28 @@ public class LabyrinthModel implements State<Direction>{
     public static final int BOARD_SIZE = 6;
 
     private final ReadOnlyObjectWrapper<Square>[][] board;
-    private List<Position> verticalWalls;
-    private List<Position> horizontalWalls;
+    private final List<Position> verticalWalls;
+    private final List<Position> horizontalWalls;
 
 
-    //Player index:0
-    //Enemy index:1
+    public static final int PLAYER = 0;
+    public final int ENEMY = 1;
     private final ReadOnlyObjectWrapper<Position>[] positions;
     private Square turn;
 
+    private ReadOnlyBooleanWrapper solved;
     private int index;
     private Direction direction;
+
+    public LabyrinthModel() {
+        this(new Position(0,0),
+                new Position(2, 4));
+    }
     public LabyrinthModel(Position playerPosition, Position enemyPosition) {
         board = new ReadOnlyObjectWrapper[BOARD_SIZE][BOARD_SIZE];
         turn = Square.PLAYER;
         index = 0;
+        solved = new ReadOnlyBooleanWrapper(false);
         this.positions = new ReadOnlyObjectWrapper[2];
         this.positions[0] = new ReadOnlyObjectWrapper<>(playerPosition);
         this.positions[1] = new ReadOnlyObjectWrapper<>(enemyPosition);
@@ -85,8 +94,23 @@ public class LabyrinthModel implements State<Direction>{
         System.out.println(model);
     }
 
-    private Position getPosition(int index) {
+    public Position getPosition(int index) {
         return positions[index].get();
+    }
+
+    public ReadOnlyBooleanProperty solvedProperty() {
+        return solved.getReadOnlyProperty();
+    }
+
+    public String getNameOfPiece() {
+        return turn.equals(Square.PLAYER) ? "Player" : "Enemy";
+    }
+
+    public boolean checkIfVerticalWallPositionPresent(Position position) {
+        return verticalWalls.contains(position);
+    }
+    public boolean checkIfHorizontalWallPositionPresent(Position position) {
+        return horizontalWalls.contains(position);
     }
 
     private void setPosition(int index, Position position) {

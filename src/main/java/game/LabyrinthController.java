@@ -3,16 +3,21 @@ package game;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.*;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import model.Direction;
 import model.LabyrinthModel;
+import model.Position;
 import org.tinylog.Logger;
+
+import java.util.Optional;
 
 public class LabyrinthController {
     @FXML
@@ -27,56 +32,46 @@ public class LabyrinthController {
 
     @FXML
     private void initialize() {
-        bindNumberOfMoves();
-    }
-
-    private void bindNumberOfMoves() {
-        numberOfMovesField.textProperty().bind(numberOfMoves.asString());
-    }
-    private void registerKeyEventHandler() {
-        Platform.runLater(() -> grid.getScene().setOnKeyPressed(this::handleKeyPress));
-    }
-
-    @FXML
-    private void handleKeyPress(KeyEvent keyEvent) {
-        var restartKeyCombination = new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN);
-        var quitKeyCombination = new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN);
-        if (restartKeyCombination.match(keyEvent)) {
-            Logger.debug("Restarting game");
-            restartGame();
-        } else if (quitKeyCombination.match(keyEvent)) {
-            Logger.debug("Exiting");
-            Platform.exit();
-        } else if (keyEvent.getCode() == KeyCode.UP) {
-            Logger.debug("UP pressed");
-            makeMoveIfLegal(Direction.UP);
-        } else if (keyEvent.getCode() == KeyCode.RIGHT) {
-            Logger.debug("RIGHT pressed");
-            makeMoveIfLegal(Direction.RIGHT);
-        } else if (keyEvent.getCode() == KeyCode.DOWN) {
-            Logger.debug("DOWN pressed");
-            makeMoveIfLegal(Direction.DOWN);
-        } else if (keyEvent.getCode() == KeyCode.LEFT) {
-            Logger.debug("LEFT pressed");
-            makeMoveIfLegal(Direction.LEFT);
+        model = new LabyrinthModel();
+        for (int i = 0; i < grid.getRowCount(); i++) {
+            for (int j = 0; j < grid.getColumnCount(); j++) {
+                var square = createSquare(i, j);
+                grid.add(square, j, i);
+            }
         }
     }
 
-    private void makeMoveIfLegal(Direction direction) {
-        if (model.isLegalMove(direction)) {
-            Logger.info("Moving {}", direction);
-            model.makeMove(direction);
-            Logger.trace("New state after move: {}", model);
-            numberOfMoves.set(numberOfMoves.get() + 1);
+
+    private StackPane createSquare(int row, int col) {
+        var square = new StackPane();
+        StringBuilder borderStyle = new StringBuilder("-fx-border-color: black; -fx-border-width: ");
+
+        if(row == 0 && col != 4) {
+            borderStyle.append("10 ");
         } else {
-            Logger.warn("Illegal move: {}", direction);
+            borderStyle.append("1 ");
         }
+        if(col == grid.getColumnCount()-1 ||
+                model.checkIfVerticalWallPositionPresent(new Position(row, col))) {
+            borderStyle.append("10 ");
+        } else {
+            borderStyle.append("1 ");
+        }
+        if(row == grid.getRowCount()-1 ||
+                model.checkIfHorizontalWallPositionPresent(new Position(row, col))) {
+            borderStyle.append("10 ");
+        } else {
+            borderStyle.append("1 ");
+        }
+        if(col == 0) {
+            borderStyle.append("10;");
+        } else {
+            borderStyle.append("1;");
+        }
+
+        square.setStyle(borderStyle.toString());
+        return square;
     }
 
-    private void restartGame() {
-        //createModel();
-        numberOfMoves.set(0);
-        //celarAndCreateGrid();
-        //TODO
-    }
+
 }

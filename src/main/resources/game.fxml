@@ -5,9 +5,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="game.LabyrinthController">
    <children>
-      <GridPane gridLinesVisible="true" prefHeight="600.0" prefWidth="600.0">
+      <GridPane fx:id="grid" prefHeight="600.0" prefWidth="600.0" stylesheets="@game.css">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -35,7 +35,7 @@
                   <Font name="JetBrains Mono Bold" size="21.0" />
                </font>
             </Label>
-            <TextField alignment="CENTER" disable="true" prefHeight="35.0" prefWidth="80.0" text="0">
+            <TextField fx:id="numberOfMovesField" alignment="CENTER" disable="true" prefHeight="35.0" prefWidth="80.0" text="0">
                <font>
                   <Font name="JetBrains Mono Regular" size="21.0" />
                </font>
