@@ -94,7 +94,7 @@ public class LabyrinthModel implements State<Direction>{
         System.out.println(model);
     }
 
-    public Position getPosition(int index) {
+    public Position getPosition() {
         return positions[index].get();
     }
 
@@ -140,25 +140,25 @@ public class LabyrinthModel implements State<Direction>{
     }
 
     private boolean canMoveLeft() {
-        return getPosition(index).col() > 0 && !isMoveBlocked(Direction.LEFT);
+        return getPosition().col() > 0 && !isMoveBlocked(Direction.LEFT);
     }
 
     private boolean canMoveDown() {
-        return getPosition(index).row() > 0 && !isMoveBlocked(Direction.DOWN);
+        return getPosition().row() > 0 && !isMoveBlocked(Direction.DOWN);
     }
 
     private boolean canMoveRight() {
-        return getPosition(index).col() < BOARD_SIZE && !isMoveBlocked(Direction.RIGHT);
+        return getPosition().col() < BOARD_SIZE && !isMoveBlocked(Direction.RIGHT);
     }
 
     private boolean canMoveUp() {
-        return getPosition(index).row() > 0 && !isMoveBlocked(Direction.UP);
+        return getPosition().row() > 0 && !isMoveBlocked(Direction.UP);
     }
 
     @Override
     public void makeMove(Direction direction) {
-        Position newPosition = getPosition(index).move(direction);
-        setSquare(getPosition(index), Square.NONE);
+        Position newPosition = getPosition().move(direction);
+        setSquare(getPosition(), Square.NONE);
         setSquare(newPosition, turn);
         setPosition(index, newPosition);
         changeIndex(index);
@@ -182,7 +182,7 @@ public class LabyrinthModel implements State<Direction>{
     }
 
     public boolean isMoveBlocked(Direction direction) {
-        Position fromPos = getPosition(index);
+        Position fromPos = getPosition();
         Position toPos;
         if(verticalWalls.contains(fromPos) && direction == Direction.RIGHT) {
             return true;
