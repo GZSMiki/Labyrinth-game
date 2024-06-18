@@ -1,22 +1,26 @@
 package game;
 
-import javafx.application.Platform;
+import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.input.*;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 import model.Direction;
 import model.LabyrinthModel;
 import model.Position;
+import model.Square;
 import org.tinylog.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class LabyrinthController {
@@ -73,10 +77,41 @@ public class LabyrinthController {
             borderStyle.append("1;");
         }
 
+        List<Circle> circle = createPlayerAndEnemyCircle(row, col);
+        square.getChildren().add(circle.get(0));
+        square.getChildren().add(circle.get(1));
         square.setStyle(borderStyle.toString());
         square.setOnMouseClicked(this::handleMouseClick);
         return square;
     }
+
+    private List<Circle> createPlayerAndEnemyCircle(int row, int col) {
+        List<Circle> circles = new ArrayList<>();
+        var playerCircle = new Circle(20);
+        var enemyCircle = new Circle(20);
+
+        playerCircle.fillProperty().bind(createSquareBinding(model.squareProperty(row, col)));
+        enemyCircle.fillProperty().bind(createSquareBinding(model.squareProperty(row, col)));
+        circles = List.of(playerCircle, enemyCircle);
+        return circles;
+    }
+
+    private ObservableValue<? extends Paint> createSquareBinding(ReadOnlyObjectProperty<Square> property) {
+        return new ObjectBinding<Paint>() {
+            {
+                super.bind(property);
+            }
+            @Override
+            protected Paint computeValue() {
+                return switch (property.get()) {
+                    case NONE -> Color.TRANSPARENT;
+                    case PLAYER -> Color.LIGHTBLUE;
+                    case ENEMY -> Color.BLACK;
+                };
+            }
+        };
+    }
+
     @FXML
     private void handleMouseClick(MouseEvent event) {
         var source = (StackPane) event.getSource();

@@ -15,15 +15,11 @@ public class LabyrinthModel implements State<Direction>{
     private final List<Position> verticalWalls;
     private final List<Position> horizontalWalls;
 
-
-    public static final int PLAYER = 0;
-    public final int ENEMY = 1;
     private final ReadOnlyObjectWrapper<Position>[] positions;
     private Square turn;
 
     private ReadOnlyBooleanWrapper solved;
     private int index;
-    private Direction direction;
 
     public LabyrinthModel() {
         this(new Position(0,0),
@@ -102,9 +98,6 @@ public class LabyrinthModel implements State<Direction>{
         return solved.getReadOnlyProperty();
     }
 
-    public String getNameOfPiece() {
-        return turn.equals(Square.PLAYER) ? "Player" : "Enemy";
-    }
 
     public boolean checkIfVerticalWallPositionPresent(Position position) {
         return verticalWalls.contains(position);
@@ -144,7 +137,7 @@ public class LabyrinthModel implements State<Direction>{
     }
 
     private boolean canMoveDown() {
-        return getPosition().row() > 0 && !isMoveBlocked(Direction.DOWN);
+        return getPosition().row() < BOARD_SIZE-1 && !isMoveBlocked(Direction.DOWN);
     }
 
     private boolean canMoveRight() {
@@ -201,12 +194,7 @@ public class LabyrinthModel implements State<Direction>{
 
         return false;
     }
-
-    private Square getSquare(Position pos) {
-        int row = pos.row();
-        int col = pos.col();
-        return board[row][col].get();
-    }
+    
 
     public String toString() {
         var sb = new StringBuilder();
