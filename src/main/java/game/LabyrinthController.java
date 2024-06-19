@@ -123,11 +123,13 @@ public class LabyrinthController {
     }
 
     private void makeMoveIfLegal(Direction direction) {
-        if (model.isLegalMove(direction)) {
+        if (model.isLegalMove(direction) && model.getTurn().equals(Square.PLAYER)) {
             Logger.info("Moving {}", direction);
             model.makeMove(direction);
             Logger.trace("New state after move: {}", model);
+            model.changeTurn();
             numberOfMoves.set(numberOfMoves.get() + 1);
+            model.enemyMove();
         } else {
             Logger.warn("Illegal move: {}", direction);
         }

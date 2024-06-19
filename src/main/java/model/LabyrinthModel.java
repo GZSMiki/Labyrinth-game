@@ -4,6 +4,7 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import org.tinylog.Logger;
 import puzzle.*;
 
 import java.util.*;
@@ -18,6 +19,8 @@ public class LabyrinthModel implements State<Direction>{
     private final ReadOnlyObjectWrapper<Position>[] positions;
     private Square turn;
 
+    private final int PLAYER = 0;
+    private final int ENEMY = 1;
     private ReadOnlyBooleanWrapper solved;
     private int index;
 
@@ -90,6 +93,14 @@ public class LabyrinthModel implements State<Direction>{
         System.out.println(model);
     }
 
+    public Square getTurn() {
+        return turn;
+    }
+
+    public void changeTurn() {
+        changeIndex(index);
+        turn = turn.nextTurn();
+    }
     public Position getPosition() {
         return positions[index].get();
     }
@@ -119,7 +130,7 @@ public class LabyrinthModel implements State<Direction>{
     }
     @Override
     public boolean isSolved() {
-        return false;
+        return positions[PLAYER].get().equals(positions[ENEMY].get());
     }
 
     @Override
@@ -154,10 +165,39 @@ public class LabyrinthModel implements State<Direction>{
         setSquare(getPosition(), Square.NONE);
         setSquare(newPosition, turn);
         setPosition(index, newPosition);
-        changeIndex(index);
-        turn = turn.nextTurn();
     }
 
+    public void enemyMove() {
+        int numberOfMoves = 2;
+        while (numberOfMoves > 0) {
+            int x = getDistance(positions[ENEMY].get().row(), positions[PLAYER].get().row());
+            int y = getDistance(positions[ENEMY].get().col(), positions[PLAYER].get().col());
+            if(y < 0 && isLegalMove(Direction.LEFT)) {
+                makeMove(Direction.LEFT);
+            } else if (y > 0 && isLegalMove(Direction.RIGHT)) {
+                makeMove(Direction.RIGHT);
+            } else if(x > 0 && isLegalMove(Direction.DOWN)) {
+                makeMove(Direction.DOWN);
+            } else if (x < 0 && isLegalMove(Direction.UP)) {
+                makeMove(Direction.UP);
+            }
+            numberOfMoves--;
+            /*
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ie) {
+                Logger.debug("Thread interrupted");
+            }
+
+             */
+            System.out.println(this);
+        }
+        changeTurn();
+    }
+
+    public int getDistance(int from, int to) {
+        return to - from;
+    }
     @Override
     public Set<Direction> getLegalMoves() {
         var legalMoves = new HashSet<Direction>();
@@ -171,7 +211,7 @@ public class LabyrinthModel implements State<Direction>{
 
     @Override
     public State<Direction> clone() {
-        return new LabyrinthModel(positions[0].get(), positions[1].get());
+        return new LabyrinthModel(positions[PLAYER].get(), positions[ENEMY].get());
     }
 
     public boolean isMoveBlocked(Direction direction) {
@@ -194,7 +234,7 @@ public class LabyrinthModel implements State<Direction>{
 
         return false;
     }
-    
+
 
     public String toString() {
         var sb = new StringBuilder();
