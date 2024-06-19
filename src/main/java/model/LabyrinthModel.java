@@ -24,6 +24,7 @@ public class LabyrinthModel implements State<Direction>{
     private ReadOnlyBooleanWrapper solved;
     private int index;
 
+    private final Position winPosition = new Position(0, 4);
     public LabyrinthModel() {
         this(new Position(0,0),
                 new Position(2, 4));
@@ -130,7 +131,7 @@ public class LabyrinthModel implements State<Direction>{
     }
     @Override
     public boolean isSolved() {
-        return positions[PLAYER].get().equals(positions[ENEMY].get());
+        return false;
     }
 
     @Override
@@ -156,6 +157,9 @@ public class LabyrinthModel implements State<Direction>{
     }
 
     private boolean canMoveUp() {
+        if(getPosition().equals(winPosition)) {
+            return true;
+        }
         return getPosition().row() > 0 && !isMoveBlocked(Direction.UP);
     }
 

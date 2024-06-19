@@ -7,6 +7,13 @@
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="game.LabyrinthController">
    <children>
+      <Button fx:id="checkWinButton" minHeight="40.0" minWidth="40.0" mnemonicParsing="false" text="Win" onAction="#winButtonClicked" textAlignment="CENTER" textFill="RED">
+         <VBox.margin>
+            <Insets bottom="10.0" left="450.0" top="20.0" />
+         </VBox.margin>
+         <font>
+            <Font name="JetBrains Mono Regular" size="12.0" />
+         </font></Button>
       <GridPane fx:id="grid" prefHeight="600.0" prefWidth="600.0" stylesheets="@game.css">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -27,6 +34,9 @@
          <padding>
             <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
          </padding>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
       </GridPane>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="600.0">
          <children>

@@ -6,6 +6,8 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
@@ -19,6 +21,7 @@ import model.Position;
 import model.Square;
 import org.tinylog.Logger;
 
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +32,9 @@ public class LabyrinthController {
 
     @FXML
     private TextField numberOfMovesField;
+
+    @FXML
+    private Button checkWinButton;
 
     private LabyrinthModel model;
 
@@ -83,6 +89,19 @@ public class LabyrinthController {
         square.setStyle(borderStyle.toString());
         square.setOnMouseClicked(this::handleMouseClick);
         return square;
+    }
+
+    @FXML
+    private void winButtonClicked() {
+        if(model.getPosition().equals(new Position(0, 4)) &&
+                model.getTurn().equals(Square.PLAYER)) {
+            Alert winAlert = new Alert(Alert.AlertType.INFORMATION);
+            winAlert.setTitle("Winner");
+            winAlert.setContentText("You win!");
+            winAlert.showAndWait();
+            Logger.debug("You win!");
+        }
+        Logger.debug("itt vagyok");
     }
 
     private List<Circle> createPlayerAndEnemyCircle(int row, int col) {
