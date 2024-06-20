@@ -4,6 +4,7 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import lombok.Getter;
 import org.tinylog.Logger;
 import puzzle.*;
 
@@ -17,6 +18,8 @@ public class LabyrinthModel implements State<Direction>{
     private final List<Position> horizontalWalls;
 
     private final ReadOnlyObjectWrapper<Position>[] positions;
+
+    @Getter
     private Square turn;
 
     private final int PLAYER = 0;
@@ -97,11 +100,7 @@ public class LabyrinthModel implements State<Direction>{
         System.out.println(model);
     }
 
-    public Square getTurn() {
-        return turn;
-    }
-
-    public void changeTurn() {
+    private void changeTurn() {
         changeIndex(index);
         turn = turn.nextTurn();
     }
@@ -109,11 +108,9 @@ public class LabyrinthModel implements State<Direction>{
         return positions[index].get();
     }
 
-    public ReadOnlyBooleanProperty solvedProperty() {
-        return solved.getReadOnlyProperty();
+    public boolean getGameOver() {
+        return gameOver.get();
     }
-
-
     public boolean checkIfVerticalWallPositionPresent(Position position) {
         return verticalWalls.contains(position);
     }
@@ -123,6 +120,10 @@ public class LabyrinthModel implements State<Direction>{
 
     private void setPosition(int index, Position position) {
         positions[index].set(position);
+    }
+
+    public void setSolved(boolean state) {
+        solved.set(state);
     }
 
     public void setSquare(Position position, Square square){
@@ -174,7 +175,7 @@ public class LabyrinthModel implements State<Direction>{
         if(gameOver.get() == false){
             Position newPosition = getPosition().move(direction);
             if(newPosition.equals(winPosition)) {
-                solved.set(true);
+                setSolved(true);
             } else {
                 setSquare(getPosition(), Square.NONE);
                 setSquare(newPosition, turn);
@@ -193,7 +194,7 @@ public class LabyrinthModel implements State<Direction>{
         }
     }
 
-    public void enemyMove() {
+    private void enemyMove() {
         int numberOfMoves = 2;
         while (numberOfMoves > 0 && gameOver.get() == false) {
             int x = getDistance(positions[ENEMY].get().row(), positions[PLAYER].get().row());
