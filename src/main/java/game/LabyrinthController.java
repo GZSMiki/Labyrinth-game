@@ -146,9 +146,9 @@ public class LabyrinthController {
             Logger.info("Moving {}", direction);
             model.makeMove(direction);
             Logger.trace("New state after move: {}", model);
-            model.changeTurn();
+            //model.changeTurn();
             numberOfMoves.set(numberOfMoves.get() + 1);
-            model.enemyMove();
+            //model.enemyMove();
         } else {
             Logger.warn("Illegal move: {}", direction);
         }

@@ -22,9 +22,11 @@ public class LabyrinthModel implements State<Direction>{
     private final int PLAYER = 0;
     private final int ENEMY = 1;
     private ReadOnlyBooleanWrapper solved;
+    private ReadOnlyBooleanWrapper gameOver;
     private int index;
 
-    private final Position winPosition = new Position(0, 4);
+    private final Position winPosition = new Position(-1, 4);
+    private final Position finishPosition = new Position(0, 4);
     public LabyrinthModel() {
         this(new Position(0,0),
                 new Position(2, 4));
@@ -34,6 +36,7 @@ public class LabyrinthModel implements State<Direction>{
         turn = Square.PLAYER;
         index = 0;
         solved = new ReadOnlyBooleanWrapper(false);
+        gameOver = new ReadOnlyBooleanWrapper(false);
         this.positions = new ReadOnlyObjectWrapper[2];
         this.positions[0] = new ReadOnlyObjectWrapper<>(playerPosition);
         this.positions[1] = new ReadOnlyObjectWrapper<>(enemyPosition);
@@ -131,17 +134,20 @@ public class LabyrinthModel implements State<Direction>{
     }
     @Override
     public boolean isSolved() {
-        return false;
+        return solved.get();
     }
 
     @Override
     public boolean isLegalMove(Direction direction) {
-        return switch (direction) {
-            case UP -> canMoveUp();
-            case RIGHT -> canMoveRight();
-            case DOWN -> canMoveDown();
-            case LEFT -> canMoveLeft();
-        };
+        if(gameOver.get() == false) {
+            return switch (direction) {
+                case UP -> canMoveUp();
+                case RIGHT -> canMoveRight();
+                case DOWN -> canMoveDown();
+                case LEFT -> canMoveLeft();
+            };
+        }
+        return false;
     }
 
     private boolean canMoveLeft() {
@@ -153,11 +159,11 @@ public class LabyrinthModel implements State<Direction>{
     }
 
     private boolean canMoveRight() {
-        return getPosition().col() < BOARD_SIZE && !isMoveBlocked(Direction.RIGHT);
+        return getPosition().col() < BOARD_SIZE-1 && !isMoveBlocked(Direction.RIGHT);
     }
 
     private boolean canMoveUp() {
-        if(getPosition().equals(winPosition)) {
+        if(getPosition().equals(finishPosition)) {
             return true;
         }
         return getPosition().row() > 0 && !isMoveBlocked(Direction.UP);
@@ -165,15 +171,31 @@ public class LabyrinthModel implements State<Direction>{
 
     @Override
     public void makeMove(Direction direction) {
-        Position newPosition = getPosition().move(direction);
-        setSquare(getPosition(), Square.NONE);
-        setSquare(newPosition, turn);
-        setPosition(index, newPosition);
+        if(gameOver.get() == false){
+            Position newPosition = getPosition().move(direction);
+            if(newPosition.equals(winPosition)) {
+                solved.set(true);
+            } else {
+                setSquare(getPosition(), Square.NONE);
+                setSquare(newPosition, turn);
+                setPosition(index, newPosition);
+            }
+            if(turn.equals(Square.PLAYER)) {
+                changeTurn();
+                enemyMove();
+            }
+        }
+    }
+
+    public void checkGameOver() {
+        if(positions[PLAYER].get().equals(positions[ENEMY].get())) {
+            gameOver.set(true);
+        }
     }
 
     public void enemyMove() {
         int numberOfMoves = 2;
-        while (numberOfMoves > 0) {
+        while (numberOfMoves > 0 && gameOver.get() == false) {
             int x = getDistance(positions[ENEMY].get().row(), positions[PLAYER].get().row());
             int y = getDistance(positions[ENEMY].get().col(), positions[PLAYER].get().col());
             if(y < 0 && isLegalMove(Direction.LEFT)) {
@@ -185,6 +207,7 @@ public class LabyrinthModel implements State<Direction>{
             } else if (x < 0 && isLegalMove(Direction.UP)) {
                 makeMove(Direction.UP);
             }
+            checkGameOver();
             numberOfMoves--;
             /*
             try {
@@ -194,7 +217,6 @@ public class LabyrinthModel implements State<Direction>{
             }
 
              */
-            System.out.println(this);
         }
         changeTurn();
     }
@@ -220,26 +242,30 @@ public class LabyrinthModel implements State<Direction>{
 
     public boolean isMoveBlocked(Direction direction) {
         Position fromPos = getPosition();
-        Position toPos;
+        Position toPos = fromPos.move(direction);
         if(verticalWalls.contains(fromPos) && direction == Direction.RIGHT) {
             return true;
         }
-        toPos = fromPos.moveLeft();
+        //toPos = fromPos.moveLeft();
         if(verticalWalls.contains(toPos) && direction == Direction.LEFT) {
             return true;
         }
         if(horizontalWalls.contains(fromPos) && direction == Direction.DOWN) {
             return true;
         }
-        toPos = fromPos.moveUp();
+        //toPos = fromPos.moveUp();
         if(horizontalWalls.contains(toPos) && direction == Direction.UP) {
             return true;
         }
-
+        //toPos = fromPos.move(direction);
+        if(toPos.equals(positions[ENEMY].get()) && turn.equals(Square.PLAYER)) {
+            return true;
+        }
         return false;
     }
 
 
+    @Override
     public String toString() {
         var sb = new StringBuilder();
         for (var i = 0; i < BOARD_SIZE; i++) {
@@ -249,5 +275,31 @@ public class LabyrinthModel implements State<Direction>{
             sb.append('\n');
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LabyrinthModel that = (LabyrinthModel) o;
+        return PLAYER == that.PLAYER && ENEMY == that.ENEMY
+                && index == that.index
+                && Arrays.deepEquals(board, that.board)
+                && Objects.equals(verticalWalls, that.verticalWalls)
+                && Objects.equals(horizontalWalls, that.horizontalWalls)
+                && Arrays.equals(positions, that.positions)
+                && turn == that.turn
+                && Objects.equals(solved, that.solved)
+                && Objects.equals(gameOver, that.gameOver)
+                && Objects.equals(winPosition, that.winPosition)
+                && Objects.equals(finishPosition, that.finishPosition);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(verticalWalls, horizontalWalls, turn, PLAYER, ENEMY, solved, gameOver, index, winPosition, finishPosition);
+        result = 31 * result + Arrays.hashCode(board);
+        result = 31 * result + Arrays.hashCode(positions);
+        return result;
     }
 }
