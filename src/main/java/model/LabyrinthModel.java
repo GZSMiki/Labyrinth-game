@@ -5,6 +5,7 @@ import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import lombok.Getter;
+import lombok.Setter;
 import org.tinylog.Logger;
 import puzzle.*;
 
@@ -13,27 +14,31 @@ import java.util.*;
 public class LabyrinthModel implements State<Direction>{
     public static final int BOARD_SIZE = 6;
 
-    private final ReadOnlyObjectWrapper<Square>[][] board;
-    private final List<Position> verticalWalls;
-    private final List<Position> horizontalWalls;
+    private ReadOnlyObjectWrapper<Square>[][] board;
+    private static List<Position> verticalWalls;
+    private static List<Position> horizontalWalls;
 
-    private final ReadOnlyObjectWrapper<Position>[] positions;
+    private ReadOnlyObjectWrapper<Position>[] positions;
 
     @Getter
     private Square turn;
 
-    private final int PLAYER = 0;
-    private final int ENEMY = 1;
+    private static final int PLAYER = 0;
+    private static final int ENEMY = 1;
+
     private ReadOnlyBooleanWrapper solved;
+
     private ReadOnlyBooleanWrapper gameOver;
+
     private int index;
 
-    private final Position winPosition = new Position(-1, 4);
-    private final Position finishPosition = new Position(0, 4);
+    private static final Position winPosition = new Position(-1, 4);
+    private static final Position finishPosition = new Position(0, 4);
     public LabyrinthModel() {
         this(new Position(0,0),
                 new Position(2, 4));
     }
+
     public LabyrinthModel(Position playerPosition, Position enemyPosition) {
         board = new ReadOnlyObjectWrapper[BOARD_SIZE][BOARD_SIZE];
         turn = Square.PLAYER;
@@ -82,7 +87,7 @@ public class LabyrinthModel implements State<Direction>{
         return board[i][j].getReadOnlyProperty();
     }
 
-
+    /*
     public static void main(String[] args) {
         var model = new LabyrinthModel(new Position(0,0), new Position(2, 4));
         System.out.println(model);
@@ -99,11 +104,12 @@ public class LabyrinthModel implements State<Direction>{
         model.makeMove(Direction.RIGHT);
         System.out.println(model);
     }
-
+    */
     private void changeTurn() {
         changeIndex(index);
         turn = turn.nextTurn();
     }
+
     public Position getPosition() {
         return positions[index].get();
     }
@@ -176,12 +182,13 @@ public class LabyrinthModel implements State<Direction>{
             Position newPosition = getPosition().move(direction);
             if(newPosition.equals(winPosition)) {
                 setSolved(true);
+                setPosition(index, newPosition);
             } else {
                 setSquare(getPosition(), Square.NONE);
                 setSquare(newPosition, turn);
                 setPosition(index, newPosition);
             }
-            if(turn.equals(Square.PLAYER)) {
+            if(turn.equals(Square.PLAYER) && !isSolved()) {
                 changeTurn();
                 enemyMove();
             }
@@ -210,14 +217,6 @@ public class LabyrinthModel implements State<Direction>{
             }
             checkGameOver();
             numberOfMoves--;
-            /*
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException ie) {
-                Logger.debug("Thread interrupted");
-            }
-
-             */
         }
         changeTurn();
     }
@@ -238,7 +237,16 @@ public class LabyrinthModel implements State<Direction>{
 
     @Override
     public State<Direction> clone() {
-        return new LabyrinthModel(positions[PLAYER].get(), positions[ENEMY].get());
+
+        Position playerPos = new Position(positions[PLAYER].get().row(), positions[PLAYER].get().col());
+        Position enemyPos = new Position(positions[ENEMY].get().row(), positions[ENEMY].get().col());
+        ReadOnlyBooleanWrapper solved = new ReadOnlyBooleanWrapper(this.solved.get());
+        ReadOnlyObjectWrapper<Position>[] pos = new ReadOnlyObjectWrapper[2];
+        pos[0] = new ReadOnlyObjectWrapper<>(playerPos);
+        pos[1] = new ReadOnlyObjectWrapper<>(enemyPos);
+        LabyrinthModel copy = new LabyrinthModel(pos[PLAYER].get(), pos[ENEMY].get());
+        copy.setSolved(solved.get());
+        return copy;
     }
 
     public boolean isMoveBlocked(Direction direction) {
@@ -247,18 +255,15 @@ public class LabyrinthModel implements State<Direction>{
         if(verticalWalls.contains(fromPos) && direction == Direction.RIGHT) {
             return true;
         }
-        //toPos = fromPos.moveLeft();
         if(verticalWalls.contains(toPos) && direction == Direction.LEFT) {
             return true;
         }
         if(horizontalWalls.contains(fromPos) && direction == Direction.DOWN) {
             return true;
         }
-        //toPos = fromPos.moveUp();
         if(horizontalWalls.contains(toPos) && direction == Direction.UP) {
             return true;
         }
-        //toPos = fromPos.move(direction);
         if(toPos.equals(positions[ENEMY].get()) && turn.equals(Square.PLAYER)) {
             return true;
         }
@@ -279,28 +284,25 @@ public class LabyrinthModel implements State<Direction>{
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
         LabyrinthModel that = (LabyrinthModel) o;
-        return PLAYER == that.PLAYER && ENEMY == that.ENEMY
-                && index == that.index
-                && Arrays.deepEquals(board, that.board)
-                && Objects.equals(verticalWalls, that.verticalWalls)
-                && Objects.equals(horizontalWalls, that.horizontalWalls)
-                && Arrays.equals(positions, that.positions)
-                && turn == that.turn
-                && Objects.equals(solved, that.solved)
-                && Objects.equals(gameOver, that.gameOver)
-                && Objects.equals(winPosition, that.winPosition)
-                && Objects.equals(finishPosition, that.finishPosition);
+        Logger.debug(positions[PLAYER].get());
+        Logger.debug(that.positions[PLAYER].get());
+        return positions[PLAYER].get().equals(that.positions[PLAYER].get()) &&
+                positions[ENEMY].get().equals(that.positions[ENEMY].get());
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(verticalWalls, horizontalWalls, turn, PLAYER, ENEMY, solved, gameOver, index, winPosition, finishPosition);
-        result = 31 * result + Arrays.hashCode(board);
-        result = 31 * result + Arrays.hashCode(positions);
-        return result;
+        return Objects.hash(positions[PLAYER].get(), positions[ENEMY].get());
     }
 }

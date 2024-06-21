@@ -125,4 +125,41 @@ class LabyrinthModelTest {
         assertTrue(model.isMoveBlocked(Direction.DOWN));
 
     }
+
+    @Test
+    void testToString() {
+        String initialState = "1 0 0 0 0 0 \n" +
+                "0 0 0 0 0 0 \n"+
+                "0 0 0 0 2 0 \n"+
+                "0 0 0 0 0 0 \n"+
+                "0 0 0 0 0 0 \n"+
+                "0 0 0 0 0 0 \n";
+        assertEquals(initialState, model.toString());
+    }
+
+    @Test
+    void testEquals() {
+        //assertTrue(model.equals(model));
+        var clone = model.clone();
+        assertTrue(clone.equals(model));
+        //System.out.println(model);
+        //clone.makeMove(Direction.RIGHT);
+        //System.out.println("Model after move:\n"+model);
+        //System.out.println("Clone after move:\n"+clone);
+        //assertFalse(clone.equals(model));
+
+    }
+
+    @Test
+    void testClone() {
+        var clone = model.clone();
+        assertTrue(clone.equals(model));
+        assertNotSame(clone, model);
+    }
+
+    @Test
+    void testHashCode() {
+        assertTrue(model.hashCode() == model.hashCode());
+        assertTrue(model.hashCode() == model.clone().hashCode());
+    }
 }
