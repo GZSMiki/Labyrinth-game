@@ -258,7 +258,10 @@ public class LabyrinthModel implements State<Direction>{
         }
     }
 
-    //TODO
+    /**
+     * Checks that the player and enemy position is the same.
+     * Sets the {@code gameOver} variable {@code true}, if the positions are the same.
+     */
     public void checkGameOver() {
         if(positions[PLAYER].get().equals(positions[ENEMY].get())) {
             gameOver.set(true);
