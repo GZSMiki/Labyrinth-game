@@ -15,8 +15,27 @@ public class LabyrinthModel implements State<Direction>{
     public static final int BOARD_SIZE = 6;
 
     private ReadOnlyObjectWrapper<Square>[][] board;
-    private static List<Position> verticalWalls;
-    private static List<Position> horizontalWalls;
+    private static final List<Position> verticalWalls = Arrays.asList(
+            new Position(0,4),
+            new Position(1,1),
+            new Position(1,3),
+            new Position(1,4),
+            new Position(2,0),
+            new Position(2,1),
+            new Position(2,2),
+            new Position(3,0),
+            new Position(3,3),
+            new Position(4,0),
+            new Position(4,1)
+    );
+    private static final List<Position> horizontalWalls = Arrays.asList(
+            new Position(0, 0),
+            new Position(1, 1),
+            new Position(1, 4),
+            new Position(2, 2),
+            new Position(2, 4),
+            new Position(3, 2)
+    );
 
     private ReadOnlyObjectWrapper<Position>[] positions;
 
@@ -60,27 +79,6 @@ public class LabyrinthModel implements State<Direction>{
                 else board[i][j] = new ReadOnlyObjectWrapper<Square>(Square.NONE);
             }
         }
-
-        verticalWalls = new ArrayList<>();
-        verticalWalls.add(new Position(0,4));
-        verticalWalls.add(new Position(1,1));
-        verticalWalls.add(new Position(1,3));
-        verticalWalls.add(new Position(1,4));
-        verticalWalls.add(new Position(2,0));
-        verticalWalls.add(new Position(2,1));
-        verticalWalls.add(new Position(2,2));
-        verticalWalls.add(new Position(3,0));
-        verticalWalls.add(new Position(3,3));
-        verticalWalls.add(new Position(4,0));
-        verticalWalls.add(new Position(4,1));
-
-        horizontalWalls = new ArrayList<>();
-        horizontalWalls.add(new Position(0, 0));
-        horizontalWalls.add(new Position(1, 1));
-        horizontalWalls.add(new Position(1, 4));
-        horizontalWalls.add(new Position(2, 2));
-        horizontalWalls.add(new Position(2, 4));
-        horizontalWalls.add(new Position(3, 2));
     }
 
     public ReadOnlyObjectProperty<Square> squareProperty(int i, int j) {
@@ -237,7 +235,6 @@ public class LabyrinthModel implements State<Direction>{
 
     @Override
     public State<Direction> clone() {
-
         Position playerPos = new Position(positions[PLAYER].get().row(), positions[PLAYER].get().col());
         Position enemyPos = new Position(positions[ENEMY].get().row(), positions[ENEMY].get().col());
         ReadOnlyBooleanWrapper solved = new ReadOnlyBooleanWrapper(this.solved.get());
