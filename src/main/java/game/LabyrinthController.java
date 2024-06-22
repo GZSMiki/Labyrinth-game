@@ -8,6 +8,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
@@ -15,6 +16,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import lombok.Setter;
 import model.Direction;
 import model.LabyrinthModel;
 import model.Position;
@@ -35,6 +37,9 @@ public class LabyrinthController {
     @FXML
     private Button checkWinButton;
 
+    @FXML
+    private Label usernameLabel;
+
     private LabyrinthModel model;
 
     private final IntegerProperty numberOfMoves = new SimpleIntegerProperty(0);
@@ -51,6 +56,9 @@ public class LabyrinthController {
         bindNumberOfMoves();
     }
 
+    public void setUsernameLabel(String name) {
+        usernameLabel.setText(name);
+    }
     private void bindNumberOfMoves() {
         numberOfMovesField.textProperty().bind(numberOfMoves.asString());
     }
@@ -104,7 +112,7 @@ public class LabyrinthController {
     }
 
     private List<Circle> createPlayerAndEnemyCircle(int row, int col) {
-        List<Circle> circles = new ArrayList<>();
+        List<Circle> circles;
         var playerCircle = new Circle(20);
         var enemyCircle = new Circle(20);
 
