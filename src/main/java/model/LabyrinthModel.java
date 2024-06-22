@@ -261,10 +261,7 @@ public class LabyrinthModel implements State<Direction>{
         if(horizontalWalls.contains(toPos) && direction == Direction.UP) {
             return true;
         }
-        if(toPos.equals(positions[ENEMY].get()) && turn.equals(Square.PLAYER)) {
-            return true;
-        }
-        return false;
+        return toPos.equals(positions[ENEMY].get()) && turn.equals(Square.PLAYER);
     }
 
 
