@@ -46,13 +46,7 @@ public class LabyrinthController {
 
     @FXML
     private void initialize() {
-        model = new LabyrinthModel();
-        for (int i = 0; i < grid.getRowCount(); i++) {
-            for (int j = 0; j < grid.getColumnCount(); j++) {
-                var square = createSquare(i, j);
-                grid.add(square, j, i);
-            }
-        }
+        restartGame();
         bindNumberOfMoves();
     }
 
@@ -98,17 +92,39 @@ public class LabyrinthController {
         return square;
     }
 
+    private void restartGame() {
+        model = new LabyrinthModel();
+        numberOfMoves.set(0);
+        grid.getChildren().clear();
+        for (int i = 0; i < grid.getRowCount(); i++) {
+            for (int j = 0; j < grid.getColumnCount(); j++) {
+                var square = createSquare(i, j);
+                grid.add(square, j, i);
+            }
+        }
+    }
+
+    @FXML
+    private void restartButtonClicked() {
+        restartGame();
+    }
     @FXML
     private void winButtonClicked() {
         if(model.getPosition().equals(new Position(0, 4)) &&
                 model.getTurn().equals(Square.PLAYER)) {
+            numberOfMoves.set(numberOfMoves.get() + 1);
             Alert winAlert = new Alert(Alert.AlertType.INFORMATION);
             winAlert.setTitle("Winner");
-            winAlert.setContentText("You win!");
+            winAlert.setContentText("You completed the labyrinth with "+numberOfMoves.get()+" moves!");
             winAlert.showAndWait();
-            Logger.debug("You win!");
+            Logger.info("{} completed the labyrinth!", usernameLabel.getText());
+        } else {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Wrong position");
+            alert.setContentText("You are not in the right position to complete the labyrinth!");
+            alert.showAndWait();
         }
-        Logger.debug("itt vagyok");
+
     }
 
     private List<Circle> createPlayerAndEnemyCircle(int row, int col) {
@@ -153,9 +169,13 @@ public class LabyrinthController {
             Logger.info("Moving {}", direction);
             model.makeMove(direction);
             Logger.trace("New state after move: {}", model);
-            //model.changeTurn();
             numberOfMoves.set(numberOfMoves.get() + 1);
-            //model.enemyMove();
+            if(model.getGameOver()) {
+                Alert gameOverAlert = new Alert(Alert.AlertType.INFORMATION);
+                gameOverAlert.setTitle("Game Over");
+                gameOverAlert.setContentText("You got caught by the enemy!");
+                gameOverAlert.showAndWait();
+            }
         } else {
             Logger.warn("Illegal move: {}", direction);
         }

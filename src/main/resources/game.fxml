@@ -40,7 +40,7 @@
       </GridPane>
       <AnchorPane prefHeight="150.0" prefWidth="650.0">
          <children>
-            <Button alignment="CENTER" layoutX="526.0" layoutY="17.0" mnemonicParsing="false" prefHeight="34.0" prefWidth="127.0" text="Restart">
+            <Button alignment="CENTER" layoutX="526.0" layoutY="17.0" mnemonicParsing="false" onAction="#restartButtonClicked" prefHeight="34.0" prefWidth="127.0" text="Restart">
                <font>
                   <Font name="JetBrains Mono Regular" size="14.0" />
                </font>
