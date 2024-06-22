@@ -6,7 +6,8 @@
     <artifactId>homework-template-project</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
-    <description><!-- TODO: a brief description of your project --></description>
+    <description>Labyrinth game where a player, marked by a light disc,
+        must navigate to the exit without being caught by a monster, marked by a dark disc.</description>
     <developers>
         <developer>
             <name>Gréczi-Zsoldos Miklós</name>
