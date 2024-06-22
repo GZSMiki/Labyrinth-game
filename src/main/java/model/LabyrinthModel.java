@@ -9,6 +9,10 @@ import puzzle.*;
 
 import java.util.*;
 
+/**
+ *  Represents the model of the labyrinth.
+ */
+
 public class LabyrinthModel implements State<Direction>{
     public static final int BOARD_SIZE = 6;
 
@@ -51,11 +55,23 @@ public class LabyrinthModel implements State<Direction>{
 
     private static final Position winPosition = new Position(-1, 4);
     private static final Position finishPosition = new Position(0, 4);
+
+    /**
+     * Creates a {@code LabyrinthModel} object that represents
+     * the initial state of the labyrinth
+     */
     public LabyrinthModel() {
         this(new Position(0,0),
                 new Position(2, 4));
     }
 
+    /**
+     * Creates a {@code LabyrinthModel} object initializing the position
+     * of the player and enemy. Expects two {@code Positon} objects.
+     *
+     * @param playerPosition position of the player
+     * @param enemyPosition position of the enemy
+     */
     public LabyrinthModel(Position playerPosition, Position enemyPosition) {
         board = new ReadOnlyObjectWrapper[BOARD_SIZE][BOARD_SIZE];
         turn = Square.PLAYER;
@@ -79,8 +95,15 @@ public class LabyrinthModel implements State<Direction>{
         }
     }
 
-    public ReadOnlyObjectProperty<Square> squareProperty(int i, int j) {
-        return board[i][j].getReadOnlyProperty();
+    /**
+     * Returns a read only property of the square located at the specified row and column
+     *
+     * @param row the row index of the square on the board
+     * @param col the column index of the square on the board
+     * {@return a ReadOnlyObjectProperty of the square at the specified position
+     */
+    public ReadOnlyObjectProperty<Square> squareProperty(int row, int col) {
+        return board[row][col].getReadOnlyProperty();
     }
 
     /*
@@ -106,16 +129,36 @@ public class LabyrinthModel implements State<Direction>{
         turn = turn.nextTurn();
     }
 
+    /**
+     * {@return the position of the player or enemy, based on the current turn.
+     */
     public Position getPosition() {
         return positions[index].get();
     }
 
+    /**
+     * @return {@code true} if the game is over, {@code false} otherwise
+     */
     public boolean getGameOver() {
         return gameOver.get();
     }
+
+    /**
+     * Checks if there is a vertical wall at the given position.
+     *
+     * @param position the position where we check the presence of the wall
+     * @return {@code true} if wall is present, {@code false} otherwise
+     */
     public boolean checkIfVerticalWallPositionPresent(Position position) {
         return verticalWalls.contains(position);
     }
+
+    /**
+     * Checks if there is a horizontal wall at the given position.
+     *
+     * @param position the position where we check the presence of the wall
+     * @return {@code true} if wall is present, {@code false} otherwise
+     */
     public boolean checkIfHorizontalWallPositionPresent(Position position) {
         return horizontalWalls.contains(position);
     }
@@ -124,10 +167,21 @@ public class LabyrinthModel implements State<Direction>{
         positions[index].set(position);
     }
 
+    /**
+     * Sets the {@code solved} variables state.
+     *
+     * @param state {@code true} if the game is solved, {@code false} otherwise
+     */
     public void setSolved(boolean state) {
         solved.set(state);
     }
 
+    /**
+     * Sets the {@code Square} value at the given position.
+     *
+     * @param position where we want to change the Square value
+     * @param square the value to change the current value
+     */
     public void setSquare(Position position, Square square){
         board[position.row()][position.col()].set(square);
     }
@@ -135,11 +189,21 @@ public class LabyrinthModel implements State<Direction>{
     private void changeIndex(int index) {
         this.index = (index == 0 ? 1 : 0);
     }
+
+    /**
+     * {@return whether the puzzle is solved}
+     */
     @Override
     public boolean isSolved() {
         return solved.get();
     }
 
+    /**
+     * {@return whether is it possible to move the player or enemy
+     * in the direction specified}
+     *
+     * @param direction the direction in which the player/enemy is moving
+     */
     @Override
     public boolean isLegalMove(Direction direction) {
         if(gameOver.get() == false) {
@@ -172,6 +236,12 @@ public class LabyrinthModel implements State<Direction>{
         return getPosition().row() > 0 && !isMoveBlocked(Direction.UP);
     }
 
+
+    /**
+     * Moves the player/enemy in the direction specified.
+     *
+     * @param direction the direction in which the player/enemy is moving
+     */
     @Override
     public void makeMove(Direction direction) {
         if(gameOver.get() == false){
@@ -191,6 +261,7 @@ public class LabyrinthModel implements State<Direction>{
         }
     }
 
+    //TODO
     public void checkGameOver() {
         if(positions[PLAYER].get().equals(positions[ENEMY].get())) {
             gameOver.set(true);
@@ -217,9 +288,20 @@ public class LabyrinthModel implements State<Direction>{
         changeTurn();
     }
 
+    /**
+     * Convenience method for calculating distance between two points.
+     *
+     * @param from the starting point
+     * @param to the ending point
+     * @return the distance between the two point
+     */
     public int getDistance(int from, int to) {
         return to - from;
     }
+
+    /**
+     * {@return the set of all moves that can be applied to the model}
+     */
     @Override
     public Set<Direction> getLegalMoves() {
         var legalMoves = new HashSet<Direction>();
@@ -244,6 +326,12 @@ public class LabyrinthModel implements State<Direction>{
         return copy;
     }
 
+    /**
+     * Checks that the direction we want to move blocked by a wall or the enemy.
+     *
+     * @param direction we want to move
+     * @return {@code true} if the move is blocked, {@code false} otherwise
+     */
     public boolean isMoveBlocked(Direction direction) {
         Position fromPos = getPosition();
         Position toPos = fromPos.move(direction);
