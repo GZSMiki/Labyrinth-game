@@ -1,11 +1,9 @@
 package model;
 
-import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import lombok.Getter;
-import lombok.Setter;
 import org.tinylog.Logger;
 import puzzle.*;
 
