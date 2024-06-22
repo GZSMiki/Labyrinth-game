@@ -350,14 +350,7 @@ public class LabyrinthModel implements State<Direction>{
 
     @Override
     public String toString() {
-        var sb = new StringBuilder();
-        for (var i = 0; i < BOARD_SIZE; i++) {
-            for (var j = 0; j < BOARD_SIZE; j++) {
-                sb.append(board[i][j].get().ordinal()).append(' ');
-            }
-            sb.append('\n');
-        }
-        return sb.toString();
+        return String.format("LabyrinthModel[player=%s,enemy=%s]", positions[PLAYER].get(), positions[ENEMY].get());
     }
 
     @Override

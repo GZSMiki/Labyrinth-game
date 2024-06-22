@@ -140,12 +140,7 @@ class LabyrinthModelTest {
 
     @Test
     void testToString() {
-        String initialState = "1 0 0 0 0 0 \n" +
-                "0 0 0 0 0 0 \n"+
-                "0 0 0 0 2 0 \n"+
-                "0 0 0 0 0 0 \n"+
-                "0 0 0 0 0 0 \n"+
-                "0 0 0 0 0 0 \n";
+        String initialState = "LabyrinthModel[player=(0, 0),enemy=(2, 4)]";
         assertEquals(initialState, model.toString());
     }
 

@@ -88,6 +88,7 @@ public class LabyrinthController {
         square.getChildren().add(circle.get(0));
         square.getChildren().add(circle.get(1));
         square.setStyle(borderStyle.toString());
+        square.getStyleClass().add("square");
         square.setOnMouseClicked(this::handleMouseClick);
         return square;
     }
