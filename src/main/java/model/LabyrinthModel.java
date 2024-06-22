@@ -10,10 +10,13 @@ import puzzle.*;
 import java.util.*;
 
 /**
- *  Represents the model of the labyrinth.
+ * Represents the model of the labyrinth.
  */
 
 public class LabyrinthModel implements State<Direction>{
+    /**
+     * The size of the board.
+     */
     public static final int BOARD_SIZE = 6;
 
     private ReadOnlyObjectWrapper<Square>[][] board;
@@ -58,7 +61,7 @@ public class LabyrinthModel implements State<Direction>{
 
     /**
      * Creates a {@code LabyrinthModel} object that represents
-     * the initial state of the labyrinth
+     * the initial state of the labyrinth.
      */
     public LabyrinthModel() {
         this(new Position(0,0),
@@ -96,11 +99,11 @@ public class LabyrinthModel implements State<Direction>{
     }
 
     /**
-     * Returns a read only property of the square located at the specified row and column
+     * Returns a read only property of the square located at the specified row and column.
      *
      * @param row the row index of the square on the board
      * @param col the column index of the square on the board
-     * {@return a ReadOnlyObjectProperty of the square at the specified position
+     * @return a ReadOnlyObjectProperty of the square at the specified position
      */
     public ReadOnlyObjectProperty<Square> squareProperty(int row, int col) {
         return board[row][col].getReadOnlyProperty();
@@ -130,7 +133,7 @@ public class LabyrinthModel implements State<Direction>{
     }
 
     /**
-     * {@return the position of the player or enemy, based on the current turn.
+     * {@return the position of the player or enemy, based on the current turn.}
      */
     public Position getPosition() {
         return positions[index].get();
@@ -176,13 +179,7 @@ public class LabyrinthModel implements State<Direction>{
         solved.set(state);
     }
 
-    /**
-     * Sets the {@code Square} value at the given position.
-     *
-     * @param position where we want to change the Square value
-     * @param square the value to change the current value
-     */
-    public void setSquare(Position position, Square square){
+    private void setSquare(Position position, Square square){
         board[position.row()][position.col()].set(square);
     }
 

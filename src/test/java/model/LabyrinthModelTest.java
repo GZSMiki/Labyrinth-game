@@ -2,6 +2,7 @@ package model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.tinylog.Logger;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,10 +16,21 @@ class LabyrinthModelTest {
     Position verticalWall = new Position(1, 1);
     Position horizontalWall = new Position(0, 0);
     LabyrinthModel model;
+    LabyrinthModel movedRight;
+    LabyrinthModel movedDown;
+    LabyrinthModel beforeWin;
 
     @BeforeEach
-    void initialize() {
+    void setUp() {
         model = new LabyrinthModel();
+        movedRight = new LabyrinthModel();
+        movedRight.makeMove(Direction.RIGHT);
+
+        movedDown = new LabyrinthModel();
+        movedDown.makeMove(Direction.DOWN);
+
+        beforeWin = new LabyrinthModel(new Position(0, 4), new Position(5, 5));
+
     }
 
     @Test
@@ -26,6 +38,10 @@ class LabyrinthModelTest {
         assertEquals(model.squareProperty(0, 0).get(), Square.PLAYER);
         assertEquals(model.squareProperty(2, 4).get(), Square.ENEMY);
         assertEquals(model.squareProperty(3, 5).get(), Square.NONE);
+
+        assertEquals(movedRight.squareProperty(0, 1).get(), Square.PLAYER);
+        assertEquals(movedRight.squareProperty(1, 3).get(), Square.ENEMY);
+        assertEquals(movedRight.squareProperty(0, 0).get(), Square.NONE);
     }
 
 
@@ -33,6 +49,9 @@ class LabyrinthModelTest {
     void getPosition() {
         assertEquals(player, model.getPosition());
         assertNotEquals(enemy, model.getPosition());
+
+        assertNotEquals(player, movedRight.getPosition());
+        assertNotEquals(player, movedDown.getPosition());
     }
 
     @Test
@@ -48,23 +67,14 @@ class LabyrinthModelTest {
     }
 
     @Test
-    void setSquare() {
-        model.setSquare(new Position(5, 5), Square.ENEMY);
-        assertEquals(model.squareProperty(5,5).get(), Square.ENEMY);
-
-        model.setSquare(new Position(4, 4), Square.PLAYER);
-        assertEquals(model.squareProperty(4,4).get(), Square.PLAYER);
-
-        model.setSquare(new Position(3, 3), Square.NONE);
-        assertEquals(model.squareProperty(3,3).get(), Square.NONE);
-    }
-
-    @Test
     void isSolved() {
         assertFalse(model.isSolved());
         model.setSolved(true);
-
         assertTrue(model.isSolved());
+
+        assertFalse(beforeWin.isSolved());
+        beforeWin.makeMove(Direction.UP);
+        assertTrue(beforeWin.isSolved());
     }
 
     @Test
@@ -73,6 +83,7 @@ class LabyrinthModelTest {
         assertFalse(model.isLegalMove(Direction.DOWN));
         assertFalse(model.isLegalMove(Direction.LEFT));
         assertTrue(model.isLegalMove(Direction.RIGHT));
+        assertTrue(beforeWin.isLegalMove(Direction.UP));
     }
 
     @Test
@@ -123,7 +134,8 @@ class LabyrinthModelTest {
     @Test
     void isMoveBlocked() {
         assertTrue(model.isMoveBlocked(Direction.DOWN));
-
+        model = new LabyrinthModel(new Position(0, 0), new Position(0, 1));
+        assertTrue(model.isMoveBlocked(Direction.RIGHT));
     }
 
     @Test
@@ -139,15 +151,14 @@ class LabyrinthModelTest {
 
     @Test
     void testEquals() {
-        //assertTrue(model.equals(model));
+        assertTrue(model.equals(model));
+        assertTrue(model.equals(new LabyrinthModel()));
+        assertFalse(model.equals(null));
+        assertFalse(model.equals("Walter White"));
         var clone = model.clone();
         assertTrue(clone.equals(model));
-        //System.out.println(model);
-        //clone.makeMove(Direction.RIGHT);
-        //System.out.println("Model after move:\n"+model);
-        //System.out.println("Clone after move:\n"+clone);
-        //assertFalse(clone.equals(model));
-
+        clone.makeMove(Direction.RIGHT);
+        assertFalse(model.equals(clone));
     }
 
     @Test
