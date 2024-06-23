@@ -35,9 +35,6 @@ public class LabyrinthController {
     private TextField numberOfMovesField;
 
     @FXML
-    private Button checkWinButton;
-
-    @FXML
     private Label usernameLabel;
 
     private LabyrinthModel model;
@@ -103,6 +100,7 @@ public class LabyrinthController {
                 grid.add(square, j, i);
             }
         }
+        Logger.info("Game restarted!");
     }
 
     @FXML
@@ -111,9 +109,10 @@ public class LabyrinthController {
     }
     @FXML
     private void winButtonClicked() {
-        if(model.getPosition().equals(new Position(0, 4)) &&
+        if(model.getPosition().equals(LabyrinthModel.FINISH_POSITION) &&
                 model.getTurn().equals(Square.PLAYER)) {
             numberOfMoves.set(numberOfMoves.get() + 1);
+            model.makeMove(Direction.UP);
             Alert winAlert = new Alert(Alert.AlertType.INFORMATION);
             winAlert.setTitle("Winner");
             winAlert.setContentText("You completed the labyrinth with "+numberOfMoves.get()+" moves!");

@@ -20,7 +20,7 @@ public class LabyrinthModel implements State<Direction>{
     public static final int BOARD_SIZE = 6;
 
     private ReadOnlyObjectWrapper<Square>[][] board;
-    private static final List<Position> verticalWalls = Arrays.asList(
+    private static final List<Position> VERTICAL_WALLS = Arrays.asList(
             new Position(0,4),
             new Position(1,1),
             new Position(1,3),
@@ -33,7 +33,7 @@ public class LabyrinthModel implements State<Direction>{
             new Position(4,0),
             new Position(4,1)
     );
-    private static final List<Position> horizontalWalls = Arrays.asList(
+    private static final List<Position> HORIZONTAL_WALLS = Arrays.asList(
             new Position(0, 0),
             new Position(1, 1),
             new Position(1, 4),
@@ -56,8 +56,8 @@ public class LabyrinthModel implements State<Direction>{
 
     private int index;
 
-    private static final Position winPosition = new Position(-1, 4);
-    private static final Position finishPosition = new Position(0, 4);
+    public static final Position WIN_POSITION = new Position(-1, 4);
+    public static final Position FINISH_POSITION = new Position(0, 4);
 
     /**
      * Creates a {@code LabyrinthModel} object that represents
@@ -153,7 +153,7 @@ public class LabyrinthModel implements State<Direction>{
      * @return {@code true} if wall is present, {@code false} otherwise
      */
     public boolean checkIfVerticalWallPositionPresent(Position position) {
-        return verticalWalls.contains(position);
+        return VERTICAL_WALLS.contains(position);
     }
 
     /**
@@ -163,7 +163,7 @@ public class LabyrinthModel implements State<Direction>{
      * @return {@code true} if wall is present, {@code false} otherwise
      */
     public boolean checkIfHorizontalWallPositionPresent(Position position) {
-        return horizontalWalls.contains(position);
+        return HORIZONTAL_WALLS.contains(position);
     }
 
     private void setPosition(int index, Position position) {
@@ -203,7 +203,7 @@ public class LabyrinthModel implements State<Direction>{
      */
     @Override
     public boolean isLegalMove(Direction direction) {
-        if(gameOver.get() == false) {
+        if(gameOver.get() == false && !isSolved()) {
             return switch (direction) {
                 case UP -> canMoveUp();
                 case RIGHT -> canMoveRight();
@@ -227,7 +227,7 @@ public class LabyrinthModel implements State<Direction>{
     }
 
     private boolean canMoveUp() {
-        if(getPosition().equals(finishPosition)) {
+        if(getPosition().equals(FINISH_POSITION)) {
             return true;
         }
         return getPosition().row() > 0 && !isMoveBlocked(Direction.UP);
@@ -241,9 +241,9 @@ public class LabyrinthModel implements State<Direction>{
      */
     @Override
     public void makeMove(Direction direction) {
-        if(gameOver.get() == false){
+        if(gameOver.get() == false && !isSolved()){
             Position newPosition = getPosition().move(direction);
-            if(newPosition.equals(winPosition)) {
+            if(newPosition.equals(WIN_POSITION)) {
                 setSolved(true);
                 setPosition(index, newPosition);
             } else {
@@ -335,16 +335,16 @@ public class LabyrinthModel implements State<Direction>{
     public boolean isMoveBlocked(Direction direction) {
         Position fromPos = getPosition();
         Position toPos = fromPos.move(direction);
-        if(verticalWalls.contains(fromPos) && direction == Direction.RIGHT) {
+        if(VERTICAL_WALLS.contains(fromPos) && direction == Direction.RIGHT) {
             return true;
         }
-        if(verticalWalls.contains(toPos) && direction == Direction.LEFT) {
+        if(VERTICAL_WALLS.contains(toPos) && direction == Direction.LEFT) {
             return true;
         }
-        if(horizontalWalls.contains(fromPos) && direction == Direction.DOWN) {
+        if(HORIZONTAL_WALLS.contains(fromPos) && direction == Direction.DOWN) {
             return true;
         }
-        if(horizontalWalls.contains(toPos) && direction == Direction.UP) {
+        if(HORIZONTAL_WALLS.contains(toPos) && direction == Direction.UP) {
             return true;
         }
         return toPos.equals(positions[ENEMY].get()) && turn.equals(Square.PLAYER);
