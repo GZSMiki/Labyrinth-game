@@ -109,31 +109,31 @@ public class LabyrinthModel implements State<Direction>{
         return board[row][col].getReadOnlyProperty();
     }
 
-    /*
+
     public static void main(String[] args) {
-        var model = new LabyrinthModel(new Position(0,0), new Position(2, 4));
-        System.out.println(model);
+        var model = new LabyrinthModel();
+        Logger.debug(model);
         model.makeMove(Direction.RIGHT);
-        System.out.println(model);
+        Logger.debug(model);
         model.makeMove(Direction.LEFT);
-        System.out.println(model);
+        Logger.debug(model);
         model.makeMove(Direction.RIGHT);
-        System.out.println(model);
+        Logger.debug(model);
         model.makeMove(Direction.UP);
-        System.out.println(model);
+        Logger.debug(model);
         model.makeMove(Direction.RIGHT);
-        System.out.println(model);
+        Logger.debug(model);
         model.makeMove(Direction.RIGHT);
-        System.out.println(model);
+        Logger.debug(model);
     }
-    */
+
     private void changeTurn() {
         changeIndex(index);
         turn = turn.nextTurn();
     }
 
     /**
-     * {@return the position of the player or enemy, based on the current turn.}
+     * @return the position of the player or enemy, based on the current turn.
      */
     public Position getPosition() {
         return positions[index].get();
@@ -188,7 +188,7 @@ public class LabyrinthModel implements State<Direction>{
     }
 
     /**
-     * {@return whether the puzzle is solved}
+     * @return whether the puzzle is solved
      */
     @Override
     public boolean isSolved() {
@@ -196,8 +196,8 @@ public class LabyrinthModel implements State<Direction>{
     }
 
     /**
-     * {@return whether is it possible to move the player or enemy
-     * in the direction specified}
+     * @return whether is it possible to move the player or enemy
+     * in the direction specified
      *
      * @param direction the direction in which the player/enemy is moving
      */
@@ -300,7 +300,7 @@ public class LabyrinthModel implements State<Direction>{
     }
 
     /**
-     * {@return the set of all moves that can be applied to the model}
+     * @return the set of all moves that can be applied to the model
      */
     @Override
     public Set<Direction> getLegalMoves() {
@@ -368,8 +368,6 @@ public class LabyrinthModel implements State<Direction>{
             return false;
         }
         LabyrinthModel that = (LabyrinthModel) o;
-        Logger.debug(positions[PLAYER].get());
-        Logger.debug(that.positions[PLAYER].get());
         return positions[PLAYER].get().equals(that.positions[PLAYER].get()) &&
                 positions[ENEMY].get().equals(that.positions[ENEMY].get());
     }
