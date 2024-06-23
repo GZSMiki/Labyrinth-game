@@ -1,8 +1,6 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/XbZw8B6J)
 # Labirintus
 
-TODO: a detailed description of your project (must contain at least the original description of the assignment)
-
 A 12. ábrán egy labirintus látható, melybe egy világos koronggal jelzett
 figurát és egy sötét koronggal jelzett szörnyet helyezünk.  
 Feladatunk a figura kijuttatása a labirintusból a kijáraton át úgy, hogy
