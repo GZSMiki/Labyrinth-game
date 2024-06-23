@@ -89,3 +89,8 @@ figurához, mozgása során pedig előnyben részesíti a vízszintes irányú e
 57. UP
 58. RIGHT
 59. UP
+
+## A projekt jellemzői
+- A játék a homework-project-utils könyvtár puzzle.State interfészére épül.  
+- A megoldás megtalálásához a homework-project-utils könyvtár puzzle.solver.BreadFirstSearch osztályát használom.  
+- A felület létrehozásához JavaFX-et használok.
