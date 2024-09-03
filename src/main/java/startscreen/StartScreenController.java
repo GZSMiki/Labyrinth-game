@@ -19,6 +19,11 @@ public class StartScreenController {
     private TextField username;
 
     @FXML
+    private void initialize() {
+        this.username.setText(System.getProperty("user.name"));
+    }
+
+    @FXML
     private void switchToGame() throws IOException {
         if(username.getText().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
