@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="result.ResultController">
+   <children>
+      <TableView layoutY="53.0" prefHeight="302.0" prefWidth="600.0">
+        <columns>
+          <TableColumn prefWidth="148.00000303983688" text="Player" />
+          <TableColumn prefWidth="86.4000244140625" text="Steps" />
+            <TableColumn prefWidth="102.99998474121094" text="Time" />
+            <TableColumn prefWidth="259.39996337890625" text="Created" />
+        </columns>
+      </TableView>
+      <Button layoutX="255.0" layoutY="360.0" mnemonicParsing="false" text="Back to menu" />
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="231.0" layoutY="14.0" prefHeight="26.0" prefWidth="137.0" text="Leaderboard" textAlignment="CENTER" textFill="RED">
+         <font>
+            <Font name="JetBrains Mono Bold" size="18.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>
