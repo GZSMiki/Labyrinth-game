@@ -1,5 +1,8 @@
 package game;
 
+import gameresult.OnePlayerGameResult;
+import gameresult.manager.GameResultManager;
+import gameresult.manager.json.JsonOnePlayerGameResultManager;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -7,7 +10,6 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.*;
@@ -16,14 +18,19 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
-import lombok.Setter;
 import model.Direction;
 import model.LabyrinthModel;
 import model.Position;
 import model.Square;
 import org.tinylog.Logger;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,13 +48,18 @@ public class LabyrinthController {
 
     private final IntegerProperty numberOfMoves = new SimpleIntegerProperty(0);
 
+    private LocalDateTime startTime = LocalDateTime.now();
+
     @FXML
     private void initialize() {
         restartGame();
         bindNumberOfMoves();
     }
 
-    public void setUsernameLabel(String name) {
+    public String getUsername() {
+        return this.usernameLabel.getText();
+    }
+    public void setUsername(String name) {
         usernameLabel.setText(name);
     }
     private void bindNumberOfMoves() {
@@ -103,6 +115,8 @@ public class LabyrinthController {
         Logger.info("Game restarted!");
     }
 
+    
+
     @FXML
     private void restartButtonClicked() {
         restartGame();
@@ -118,6 +132,7 @@ public class LabyrinthController {
             winAlert.setContentText("You completed the labyrinth with "+numberOfMoves.get()+" moves!");
             winAlert.showAndWait();
             Logger.info("{} completed the labyrinth!", usernameLabel.getText());
+            handleWinAndSave();
         } else {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Wrong position");
@@ -126,6 +141,35 @@ public class LabyrinthController {
         }
 
     }
+
+    @FXML
+    private void handleWinAndSave() {
+        try {
+            Path path = Path.of("gameresult.json");
+            if (!Files.exists(path)){
+                Files.createFile(path);
+                Files.writeString(path, "[]");
+
+            }
+            GameResultManager<OnePlayerGameResult> manager =
+                    new JsonOnePlayerGameResultManager(Path.of("gameresult.json"));
+            manager.add(createGameResult());
+            Logger.info("Added game result to JSON file.");
+        } catch (IOException e) {
+            Logger.error("Failed to save game result: {}", e.getMessage());
+        }
+    }
+
+    private OnePlayerGameResult createGameResult() {
+        return OnePlayerGameResult.builder()
+                .playerName(getUsername())
+                .solved(true)
+                .numberOfMoves(numberOfMoves.get())
+                .duration(Duration.ofSeconds(ChronoUnit.SECONDS.between(startTime, LocalDateTime.now())))
+                .created(ZonedDateTime.now())
+                .build();
+    }
+
 
     private List<Circle> createPlayerAndEnemyCircle(int row, int col) {
         List<Circle> circles;

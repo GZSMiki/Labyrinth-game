@@ -11,7 +11,6 @@ import javafx.stage.Stage;
 import org.tinylog.Logger;
 
 import java.io.IOException;
-import java.util.Objects;
 
 
 public class StartScreenController {
@@ -48,7 +47,7 @@ public class StartScreenController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
         Parent root = loader.load();
         LabyrinthController labcontroller = loader.getController();
-        labcontroller.setUsernameLabel(username.getText());
+        labcontroller.setUsername(username.getText());
         Stage stage = (Stage) username.getScene().getWindow();
         stage.setScene(new Scene(root));
         stage.show();
