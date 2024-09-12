@@ -112,6 +112,7 @@ public class LabyrinthController {
                 grid.add(square, j, i);
             }
         }
+        startTime = LocalDateTime.now();
         Logger.info("Game restarted!");
     }
 

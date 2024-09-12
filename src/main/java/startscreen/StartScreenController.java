@@ -1,8 +1,10 @@
 package startscreen;
 
 import game.LabyrinthController;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
@@ -23,7 +25,7 @@ public class StartScreenController {
     }
 
     @FXML
-    private void switchToGame() throws IOException {
+    private void switchToGame(ActionEvent event) throws IOException {
         if(username.getText().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle(null);
@@ -31,25 +33,27 @@ public class StartScreenController {
             alert.showAndWait();
         } else {
             Logger.info("Username set to {}", username.getText());
-            loadScene("/game.fxml");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/game.fxml"));
+            Parent root = loader.load();
+            LabyrinthController labcontroller = loader.getController();
+            labcontroller.setUsername(username.getText());
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+            stage.setTitle("Game");
+            stage.show();
         }
     }
 
     @FXML
-    private void switchToResults() throws IOException {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setContentText("Not implemented!");
-        alert.setTitle(null);
-        alert.showAndWait();
-    }
-
-    private void loadScene(String path) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
+    private void switchToResults(ActionEvent event) throws IOException {
+        Logger.info("Switching to results");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gameresult.fxml"));
         Parent root = loader.load();
-        LabyrinthController labcontroller = loader.getController();
-        labcontroller.setUsername(username.getText());
-        Stage stage = (Stage) username.getScene().getWindow();
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(new Scene(root));
+        stage.setResizable(false);
+        stage.setTitle("Results");
         stage.show();
     }
 }
